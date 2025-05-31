@@ -23,7 +23,6 @@ Reference: Group 20 Reaction Engineering Report, §2.1
 
 import numpy as np
 
-
 R_GAS = 8.314e-3  # kJ/(mol·K)
 
 # ── LHHW Arrhenius parameters (Deshmukh et al. 2005) ─────────────────────────

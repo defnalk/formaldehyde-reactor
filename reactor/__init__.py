@@ -20,8 +20,8 @@ pfr           : PFR material + energy + pressure-drop ODEs
 analysis      : Yield, selectivity, flammability, SQP optimisation
 """
 
-from .kinetics  import PowerLawKinetics, LHHWKinetics
-from .pfr       import PackedBedPFR
-from .analysis  import ReactorAnalysis
+from .analysis import ReactorAnalysis
+from .kinetics import LHHWKinetics, PowerLawKinetics
+from .pfr import PackedBedPFR
 
 __all__ = ["PowerLawKinetics", "LHHWKinetics", "PackedBedPFR", "ReactorAnalysis"]

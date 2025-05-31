@@ -10,7 +10,7 @@ Reference: Group 20 Reaction Engineering Report, §4
 import numpy as np
 from scipy.optimize import minimize
 
-from .pfr import PackedBedPFR, P_INLET, Y_INLET
+from .pfr import P_INLET, Y_INLET, PackedBedPFR
 
 
 class ReactorAnalysis:

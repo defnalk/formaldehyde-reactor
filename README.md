@@ -152,5 +152,4 @@ The feed oxygen concentration (6 vol%) is below the Lowest Oxygen Concentration 
 
 ## Authors
 
-Adib Rahman, **Defne Ertugrul**, Kaanchana Sivamaran, Svante Lindstrom, Yan Ni Chong  
 MEng Chemical Engineering, Imperial College London (Group 20, 2025)

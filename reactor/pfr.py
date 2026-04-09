@@ -189,8 +189,14 @@ class PackedBedPFR:
         T = state[6]
         P = state[7]
 
-        F_total = max(n.sum(), 1e-12)
-        y = np.maximum(n, 0) / F_total
+        # Clip species flows non-negative *before* summing so the total
+        # used in the denominator is consistent with the numerator. The
+        # previous code computed F_total from the raw (possibly slightly
+        # negative) sum and divided the clipped vector by it, producing
+        # mole fractions that did not sum to 1.
+        n_pos = np.maximum(n, 0)
+        F_total = max(n_pos.sum(), 1e-12)
+        y = n_pos / F_total
 
         r1, r2 = self._rates(n, T, P)
         rates  = np.array([r1, r2])

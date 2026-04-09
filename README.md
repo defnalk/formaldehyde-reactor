@@ -57,6 +57,27 @@ opt = ra.sqp_optimise()
 print(f"Optimal L={opt['optimal_L']}m, T={opt['optimal_T']}K")
 ```
 
+## Reproduce the Published Result (one command)
+
+All key parameters live in [`config/default.yaml`](config/default.yaml). To
+reproduce the figure and metrics in [`results/`](results/) from a fresh clone:
+
+```bash
+git clone https://github.com/defnalk/formaldehyde-reactor.git
+cd formaldehyde-reactor
+pip install -r requirements.txt
+python -m reactor.cli --config config/default.yaml
+```
+
+Outputs:
+
+- `results/metrics.json` — yields, selectivity, conversion, optimisation result
+- `results/reactor_simulation_results.png` — 4-panel summary figure
+
+To explore variations, copy `config/default.yaml`, edit any parameter
+(kinetics model, temperature, tube length, sweep ranges), and pass the new
+file via `--config`. No code changes required.
+
 ## Run the Full Simulation
 
 ```bash

@@ -1,0 +1,23 @@
+{
+  "config": "config/default.yaml",
+  "isothermal": {
+    "T_K": 640.0,
+    "L_m": 0.5,
+    "yield_HCHO": 0.22267320557156237,
+    "selectivity": 0.9998957142907322,
+    "conversion": 0.2226964296266772,
+    "P_outlet_atm": 1.4437467471770171
+  },
+  "adiabatic": {
+    "L_m": 1.5,
+    "T_peak_K": 447.3394522067755
+  },
+  "optimisation": {
+    "success": true,
+    "optimal_L_m": 1.4084,
+    "optimal_T_K": 640.0,
+    "max_yield": 0.4272,
+    "selectivity": 0.9998,
+    "P_outlet_atm": 1.1
+  }
+}

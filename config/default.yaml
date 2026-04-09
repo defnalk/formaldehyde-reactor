@@ -1,0 +1,33 @@
+# Default reproducibility config for formaldehyde-reactor.
+# Every key parameter that influences a published result lives here.
+# Run with:  python -m reactor.cli --config config/default.yaml
+
+reactor:
+  kinetics: LHHW            # "LHHW" or "power_law"
+  mode: isothermal          # "isothermal" or "adiabatic"
+  T_isothermal: 640.0       # K (used only when mode == isothermal)
+  L: 0.5                    # tube length, m
+
+adiabatic:
+  L: 1.5                    # tube length for the adiabatic run, m
+
+sweeps:
+  temperature:
+    T_min: 560.0
+    T_max: 700.0
+    n_points: 30
+    L: 0.5
+  length:
+    L_min: 0.3
+    L_max: 2.0
+    n_points: 25
+    T: 640.0
+
+optimisation:
+  run_sqp: true
+
+output:
+  results_dir: results
+  figure_name: reactor_simulation_results.png
+  metrics_name: metrics.json
+  random_seed: 0

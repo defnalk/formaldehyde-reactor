@@ -34,7 +34,10 @@ class ReactorAnalysis:
         self.kinetics = kinetics
         self.n_tubes  = n_tubes
 
-    def _pfr(self, T: float = 640.0, L: float = 0.5, mode: str = "isothermal") -> PackedBedPFR:
+    def _pfr(self, T: float = 640.0, mode: str = "isothermal") -> PackedBedPFR:
+        # PackedBedPFR has no length parameter — L belongs to simulate(),
+        # not the constructor — so the previous L kwarg was misleading
+        # dead state. Drop it.
         return PackedBedPFR(
             kinetics=self.kinetics,
             mode=mode,
@@ -65,7 +68,7 @@ class ReactorAnalysis:
         """
         yields, sels, convs = [], [], []
         for T in T_range:
-            res = self._pfr(T=T, L=L).simulate(L=L)
+            res = self._pfr(T=T).simulate(L=L)
             yields.append(res["yield_HCHO"])
             sels.append(res["selectivity"])
             convs.append(res["conversion"])
@@ -204,7 +207,7 @@ class ReactorAnalysis:
         def neg_yield(x):
             L, T = x
             try:
-                res = self._pfr(T=T, L=L).simulate(L=L)
+                res = self._pfr(T=T).simulate(L=L)
                 return -res["yield_HCHO"]
             except Exception:
                 return 0.0
@@ -212,7 +215,7 @@ class ReactorAnalysis:
         def pressure_constraint(x):
             L, T = x
             try:
-                res = self._pfr(T=T, L=L).simulate(L=L)
+                res = self._pfr(T=T).simulate(L=L)
                 return res["P"][-1] - 1.1   # must be ≥ 0
             except Exception:
                 return -1.0
@@ -232,7 +235,7 @@ class ReactorAnalysis:
 
         if result.success:
             L_opt, T_opt = result.x
-            res = self._pfr(T=T_opt, L=L_opt).simulate(L=L_opt)
+            res = self._pfr(T=T_opt).simulate(L=L_opt)
             return {
                 "optimal_L":   round(L_opt, 4),
                 "optimal_T":   round(T_opt, 1),

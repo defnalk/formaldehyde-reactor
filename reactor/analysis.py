@@ -144,6 +144,16 @@ class ReactorAnalysis:
         dict with: 'LFL', 'UFL', 'LOC', 'y_fuel_inlet', 'y_O2_inlet',
                    'is_flammable', 'safety_margin_LFL'
         """
+        if fuel != "MeOH":
+            # The hardcoded LFL/UFL/LOC constants below are methanol-only
+            # (Zabetakis 1965 / NFPA). Other fuels would silently get the
+            # wrong limits, so refuse them rather than mislead the caller.
+            raise NotImplementedError(
+                f"flammability_limits only supports fuel='MeOH', got {fuel!r}. "
+                "Pure-component LFL/UFL/LOC data must be added before "
+                "extending to additional fuels."
+            )
+
         # Pure methanol limits (vol% in air)
         LFL_MeOH = 0.060    # 6.0%
         UFL_MeOH = 0.365    # 36.5%

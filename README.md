@@ -1,5 +1,7 @@
 # formaldehyde-reactor
 
+[![CI](https://github.com/defnalk/formaldehyde-reactor/actions/workflows/ci.yml/badge.svg)](https://github.com/defnalk/formaldehyde-reactor/actions/workflows/ci.yml)
+
 Python simulation of a catalytic packed-bed plug-flow reactor (PFR) for the partial oxidation of methanol to formaldehyde.
 
 Based on the **Imperial College London Reaction Engineering group design project (Group 20, 2025)**.

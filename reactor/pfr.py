@@ -257,6 +257,16 @@ class PackedBedPFR:
 
         z_eval = np.linspace(0, L, n_points)
 
+        # Terminate the integration if pressure drops to (near-)zero. The
+        # Ergun term is unbounded as P → 0 and partial pressures fed to
+        # the Arrhenius / LHHW kinetics become meaningless, so without an
+        # event the solver can drift into a regime where the rate
+        # expressions blow up rather than reporting a clean failure.
+        def p_floor(z, state):  # noqa: ARG001
+            return state[7] - 1e-3   # atm
+        p_floor.terminal = True
+        p_floor.direction = -1
+
         sol = solve_ivp(
             self._odes,
             [0, L],
@@ -265,10 +275,16 @@ class PackedBedPFR:
             method="RK45",
             rtol=1e-4,
             atol=1e-6,
+            events=p_floor,
         )
 
         if not sol.success:
             raise RuntimeError(f"PFR ODE solver failed: {sol.message}")
+        if sol.t_events[0].size:
+            raise RuntimeError(
+                f"PFR pressure dropped below 1e-3 atm at z={sol.t_events[0][0]:.3f} m; "
+                "tube is too long for the given inlet conditions."
+            )
 
         n = sol.y[:6].T   # shape (n_points, 6)
         T = sol.y[6]

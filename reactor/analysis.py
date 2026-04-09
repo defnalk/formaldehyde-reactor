@@ -96,13 +96,20 @@ class ReactorAnalysis:
         -------
         dict with arrays: 'L', 'yield_HCHO', 'production_tpd', 'P_outlet'
         """
+        # production_rate(L) internally re-runs simulate(L=L), so the
+        # original loop solved every reactor twice. Reuse the molar HCHO
+        # outflow from the simulate() call we already made and convert
+        # locally — same answer, half the ODE solves.
+        M_HCHO = 0.03003   # kg/mol
         yields, prods, P_out = [], [], []
         pfr = self._pfr(T=T)
         for L in L_range:
             res = pfr.simulate(L=L)
             yields.append(res["yield_HCHO"])
             P_out.append(res["P"][-1])
-            prods.append(pfr.production_rate(L))
+            n_HCHO_per_tube = res["n"][-1, 3]   # mol/s per tube
+            tpd = n_HCHO_per_tube * pfr.n_tubes * M_HCHO * 86_400 / 1000
+            prods.append(tpd)
 
         return {
             "L":             L_range,

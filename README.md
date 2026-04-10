@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/defnalk/formaldehyde-reactor/actions/workflows/ci.yml/badge.svg)](https://github.com/defnalk/formaldehyde-reactor/actions/workflows/ci.yml)
 
-Python simulation of a catalytic packed-bed plug-flow reactor (PFR) for the partial oxidation of methanol to formaldehyde.
+Python simulation of a catalytic packed bed plug flow reactor (PFR) for the partial oxidation of methanol to formaldehyde.
 
 Based on the **Imperial College London Reaction Engineering group design project (Group 20, 2025)**.
 
@@ -19,8 +19,8 @@ HCHO  + ½O₂  →  CO   + H₂O    (undesired — suppressed by design)
 
 | Module | Contents |
 |---|---|
-| `kinetics.py` | Power-law model (empirical, regression-fitted) and LHHW model (Deshmukh et al. 2005) |
-| `pfr.py` | Packed-bed PFR: material balance + energy balance + Ergun pressure drop |
+| `kinetics.py` | Power law model (empirical, regression fitted) and LHHW model (Deshmukh et al. 2005) |
+| `pfr.py` | Packed bed PFR: material balance + energy balance + Ergun pressure drop |
 | `analysis.py` | Temperature & length sensitivity, flammability limits, SQP optimisation |
 
 ---
@@ -63,15 +63,15 @@ print(f"Optimal L={opt['optimal_L']}m, T={opt['optimal_T']}K")
 python examples/full_simulation.py
 ```
 
-Generates a 4-panel figure:
+Generates a 4 panel figure:
 
 ![Reactor Simulation Results](examples/reactor_simulation_results.png)
 
 **Panels:**
-- **A** — Isothermal molar flow profiles (LHHW, 640 K) showing CH₃OH consumed, HCHO produced
-- **B** — Adiabatic temperature profile — steep rise near inlet, then plateau as reactants deplete
-- **C** — Yield and selectivity vs. temperature — identifies 640 K as optimal
-- **D** — Tube length vs. yield and outlet pressure — shows minimum-length constraint at 1.1 atm
+- **A**, Isothermal molar flow profiles (LHHW, 640 K) showing CH₃OH consumed, HCHO produced
+- **B**, Adiabatic temperature profile, steep rise near inlet, then plateau as reactants deplete
+- **C**, Yield and selectivity vs. temperature, identifies 640 K as optimal
+- **D**, Tube length vs. yield and outlet pressure, shows minimum length constraint at 1.1 atm
 
 ## Run Tests
 
@@ -87,15 +87,15 @@ python -m pytest tests/ -v
 
 ### Kinetic Models
 
-**Power-Law** (empirical, fitted to experimental data at 523 K):
+**Power Law** (empirical, fitted to experimental data at 523 K):
 
 ```
 R_HCHO = k(T) · [CH₃OH]^0.8742 · [O₂]^0.1124 · [H₂O]^-0.4858
 ```
 
-*Limitation:* Does not account for surface adsorption — systematically overpredicts conversion, especially at high temperatures. Risk of suggesting unsafe operating temperatures that could lead to reactor runaway.
+*Limitation:* Does not account for surface adsorption, systematically overpredicts conversion, especially at high temperatures. Risk of suggesting unsafe operating temperatures that could lead to reactor runaway.
 
-**LHHW — Langmuir-Hinshelwood-Hougen-Watson** (Deshmukh et al. 2005):
+**LHHW, Langmuir Hinshelwood Hougen Watson** (Deshmukh et al. 2005):
 
 ```
          α · k_MeOH · K_MeOH · P_MeOH · K_O₂ · P_O₂^0.5
@@ -103,7 +103,7 @@ R_HCHO = ───────────────────────�
          (1 + K_MeOH·P_MeOH + K_H₂O·P_H₂O)(1 + K_O₂·P_O₂^0.5)
 ```
 
-*Advantage:* Captures competitive adsorption (methanol/water compete for active sites), surface saturation at high methanol concentrations, and temperature-dependent adsorption equilibria. More accurate — particularly at high temperatures and adiabatic conditions.
+*Advantage:* Captures competitive adsorption (methanol/water compete for active sites), surface saturation at high methanol concentrations, and temperature dependent adsorption equilibria. More accurate, particularly at high temperatures and adiabatic conditions.
 
 ### Material Balance (PFR design equation)
 
@@ -148,7 +148,7 @@ The feed oxygen concentration (6 vol%) is below the Lowest Oxygen Concentration 
 
 ## References
 
-- Deshmukh, S.A.R.K., Annaland, M.V.S. & Kuipers, J.A.M. (2005). *Kinetics of the partial oxidation of methanol over a Fe–Mo catalyst.* Applied Catalysis A.
+- Deshmukh, S.A.R.K., Annaland, M.V.S. & Kuipers, J.A.M. (2005). *Kinetics of the partial oxidation of methanol over a Fe/Mo catalyst.* Applied Catalysis A.
 - Fogler, H.S. *Elements of Chemical Reaction Engineering.* 5th ed.
 - Ergun, S. (1952). *Fluid flow through packed columns.* Chem. Eng. Prog.
 

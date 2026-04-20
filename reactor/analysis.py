@@ -34,7 +34,10 @@ class ReactorAnalysis:
         self.kinetics = kinetics
         self.n_tubes  = n_tubes
 
-    def _pfr(self, T: float = 640.0, L: float = 0.5, mode: str = "isothermal") -> PackedBedPFR:
+    def _pfr(self, T: float = 640.0, mode: str = "isothermal") -> PackedBedPFR:
+        # PackedBedPFR has no length parameter — L belongs to simulate(),
+        # not the constructor — so the previous L kwarg was misleading
+        # dead state. Drop it.
         return PackedBedPFR(
             kinetics=self.kinetics,
             mode=mode,
@@ -65,7 +68,7 @@ class ReactorAnalysis:
         """
         yields, sels, convs = [], [], []
         for T in T_range:
-            res = self._pfr(T=T, L=L).simulate(L=L)
+            res = self._pfr(T=T).simulate(L=L)
             yields.append(res["yield_HCHO"])
             sels.append(res["selectivity"])
             convs.append(res["conversion"])
@@ -96,13 +99,20 @@ class ReactorAnalysis:
         -------
         dict with arrays: 'L', 'yield_HCHO', 'production_tpd', 'P_outlet'
         """
+        # production_rate(L) internally re-runs simulate(L=L), so the
+        # original loop solved every reactor twice. Reuse the molar HCHO
+        # outflow from the simulate() call we already made and convert
+        # locally — same answer, half the ODE solves.
+        M_HCHO = 0.03003   # kg/mol
         yields, prods, P_out = [], [], []
         pfr = self._pfr(T=T)
         for L in L_range:
             res = pfr.simulate(L=L)
             yields.append(res["yield_HCHO"])
             P_out.append(res["P"][-1])
-            prods.append(pfr.production_rate(L))
+            n_HCHO_per_tube = res["n"][-1, 3]   # mol/s per tube
+            tpd = n_HCHO_per_tube * pfr.n_tubes * M_HCHO * 86_400 / 1000
+            prods.append(tpd)
 
         return {
             "L":             L_range,
@@ -134,6 +144,16 @@ class ReactorAnalysis:
         dict with: 'LFL', 'UFL', 'LOC', 'y_fuel_inlet', 'y_O2_inlet',
                    'is_flammable', 'safety_margin_LFL'
         """
+        if fuel != "MeOH":
+            # The hardcoded LFL/UFL/LOC constants below are methanol-only
+            # (Zabetakis 1965 / NFPA). Other fuels would silently get the
+            # wrong limits, so refuse them rather than mislead the caller.
+            raise NotImplementedError(
+                f"flammability_limits only supports fuel='MeOH', got {fuel!r}. "
+                "Pure-component LFL/UFL/LOC data must be added before "
+                "extending to additional fuels."
+            )
+
         # Pure methanol limits (vol% in air)
         LFL_MeOH = 0.060    # 6.0%
         UFL_MeOH = 0.365    # 36.5%
@@ -197,7 +217,7 @@ class ReactorAnalysis:
         def neg_yield(x):
             L, T = x
             try:
-                res = self._pfr(T=T, L=L).simulate(L=L)
+                res = self._pfr(T=T).simulate(L=L)
                 return -res["yield_HCHO"]
             except Exception:
                 return 0.0
@@ -205,7 +225,7 @@ class ReactorAnalysis:
         def pressure_constraint(x):
             L, T = x
             try:
-                res = self._pfr(T=T, L=L).simulate(L=L)
+                res = self._pfr(T=T).simulate(L=L)
                 return res["P"][-1] - 1.1   # must be ≥ 0
             except Exception:
                 return -1.0
@@ -225,7 +245,7 @@ class ReactorAnalysis:
 
         if result.success:
             L_opt, T_opt = result.x
-            res = self._pfr(T=T_opt, L=L_opt).simulate(L=L_opt)
+            res = self._pfr(T=T_opt).simulate(L=L_opt)
             return {
                 "optimal_L":   round(L_opt, 4),
                 "optimal_T":   round(T_opt, 1),
